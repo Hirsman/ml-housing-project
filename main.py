@@ -1,16 +1,16 @@
-import sys
 from pathlib import Path
-
 from ml_project.pipeline import run_pipeline
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-SRC_PATH = PROJECT_ROOT / "src"
-sys.path.insert(0, str(SRC_PATH))
 
 
 if __name__ == "__main__":
     metrics = run_pipeline()
-    print("Pipeline terminé avec succès.")
-    print(f"MAE  : {metrics['mae']:.4f}")
-    print(f"RMSE : {metrics['rmse']:.4f}")
-    print(f"R2   : {metrics['r2']:.4f}")
+
+    print("\nPipeline terminé avec succès.")
+
+    best_model = metrics["best_model"]
+    best_metrics = metrics["results"][best_model]
+
+    print(f"Best model : {best_model}")
+    print(f"MAE  : {best_metrics['mae']:.4f}")
+    print(f"RMSE : {best_metrics['rmse']:.4f}")
+    print(f"R2   : {best_metrics['r2']:.4f}")
