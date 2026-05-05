@@ -1,9 +1,15 @@
 import pandas as pd
-from sklearn.datasets import fetch_california_housing
+
+from ml_project.data import load_housing_data
 
 
-def load_housing_data() -> pd.DataFrame:
-    """Charge le dataset California Housing sous forme de DataFrame."""
-    dataset = fetch_california_housing(as_frame=True)
-    df = dataset.frame
-    return df
+def test_target_column_exists_and_not_empty():
+    df = load_housing_data()
+
+    target_column = "MedHouseVal"
+
+    # 1. la colonne existe
+    assert target_column in df.columns, "Colonne cible absente"
+
+    # 2. pas entièrement vide
+    assert df[target_column].notna().any(), "Colonne cible entièrement vide"
