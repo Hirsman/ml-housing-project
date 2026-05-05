@@ -1,6 +1,5 @@
 # tests/test_preprocessing.py
 import pandas as pd
-
 from src.ml_project.preprocessing import remove_missing_values, validate_columns
 
 

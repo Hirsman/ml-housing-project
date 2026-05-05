@@ -1,6 +1,4 @@
-from pathlib import Path
 from ml_project.pipeline import run_pipeline
-
 
 if __name__ == "__main__":
     metrics = run_pipeline()

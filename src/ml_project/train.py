@@ -1,13 +1,13 @@
+from pathlib import Path
+from typing import Dict
+
+import joblib
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-import numpy as np
-import joblib
-from pathlib import Path
-from typing import Dict, Tuple, Any
-
-from ml_project.config import RANDOM_STATE, MODELS, ARTIFACTS_DIR, BEST_MODEL_NAME
+from ml_project.config import ARTIFACTS_DIR, BEST_MODEL_NAME, MODELS, RANDOM_STATE
 
 
 # =========================

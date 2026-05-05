@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from ml_project.config import TEST_SIZE, RANDOM_STATE, TARGET_COLUMN
+from ml_project.config import RANDOM_STATE, TARGET_COLUMN, TEST_SIZE
 
 
 def split_features_target(df: pd.DataFrame):
