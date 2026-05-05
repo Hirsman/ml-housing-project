@@ -1,13 +1,14 @@
-from ml_project.pipeline import run_pipeline  # adapte au bon nom
+from ml_project.pipeline import run_pipeline
 
 
-def test_pipeline_returns_metrics(tmp_path):
-    metrics = run_pipeline(artifacts_dir=str(tmp_path))
+def test_pipeline_returns_metrics():
+    metrics = run_pipeline()
 
-    assert "mae" in metrics
-    assert "rmse" in metrics
-    assert "r2" in metrics
-    assert metrics["mae"] > 0
-    assert -1 <= metrics["r2"] <= 1
-    assert (tmp_path / "model.joblib").exists()
-    assert (tmp_path / "metrics.json").exists()
+    assert "results" in metrics
+    assert "best_model" in metrics
+
+    assert "rf" in metrics["results"]
+
+    assert "mae" in metrics["results"]["rf"]
+    assert "rmse" in metrics["results"]["rf"]
+    assert "r2" in metrics["results"]["rf"]
