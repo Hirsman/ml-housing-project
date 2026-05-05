@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-TARGET_COLUMN = "MedHouseVal"
+from ml_project.config import TEST_SIZE, RANDOM_STATE, TARGET_COLUMN
 
 
 def split_features_target(df: pd.DataFrame):
@@ -11,11 +11,11 @@ def split_features_target(df: pd.DataFrame):
     return X, y
 
 
-def split_train_test(X, y, test_size: float = 0.2, random_state: int = 42):
+def split_train_test(X, y):
     """Découpe les données en train/test."""
     return train_test_split(
         X,
         y,
-        test_size=test_size,
-        random_state=random_state,
+        test_size=TEST_SIZE,
+        random_state=RANDOM_STATE,
     )
