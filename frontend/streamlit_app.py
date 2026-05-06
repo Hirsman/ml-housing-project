@@ -20,7 +20,6 @@ with col2:
     longitude = st.number_input("Longitude", value=-118.0, format="%.2f")
 
 if st.button("Calculer l'estimation", type="primary"):
-
     payload = {
         "MedInc": med_inc,
         "HouseAge": house_age,
