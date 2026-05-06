@@ -1,84 +1,40 @@
-name: CI Pipeline
+name: CI - Python Quality Checks
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
 jobs:
-
-  # 1. Lint
-  lint:
+  quality:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.10"
 
-      - name: Install Ruff
-        run: pip install ruff
-
-      - name: Run Ruff Check
-        run: ruff check .
-
-  # 2. Format
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install Format Tools
-        run: pip install black ruff
-
-      - name: Check Style
-        run: |
-          black --check .
-          ruff format --check .
-
-  # 3. Tests
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-
-      - name: Install Dependencies
+      - name: Install project and dev dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest-cov
+          pip install -e ".[dev]"
 
-      - name: Run Pytest
-        run: pytest -v --cov=src
+      - name: Check Black formatting
+        run: black --check .
 
-  # 4. Security
-  security:
-    runs-on: ubuntu-latest
-    needs: [lint, format, tests]
-    steps:
-      - uses: actions/checkout@v4
+      - name: Run Ruff lint
+        run: ruff check .
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Run unit tests
+        run: pytest -v
 
-      - name: Install Bandit
-        run: pip install bandit
+      - name: Run Bandit security scan
+        run: bandit -r src
 
-      - name: Run Security Scan
-        run: bandit -r src backend frontend
+      - name: Check project structure
+        run: python scripts/check_project_structure.py

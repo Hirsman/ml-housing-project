@@ -1,16 +1,22 @@
+[project]
+dependencies = [
+    "pandas",
+    "scikit-learn",
+    "joblib",
+]
+
 [tool.ruff]
 line-length = 88
-src = ["src", "tests"]
-target-version = "py311"
+target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B"]
-ignore = []
-
-[tool.black]
-line-length = 88
-target-version = ["py311"]
+select = ["E", "F", "I", "N", "B", "S"]
+ignore = ["N803", "N806"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-python_files = ["test_*.py"]
+pythonpath = ["src"]
+
+[tool.bandit]
+targets = ["src"]
+exclude_dirs = [".venv", "venv"]
