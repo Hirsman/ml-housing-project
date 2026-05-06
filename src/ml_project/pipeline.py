@@ -11,6 +11,7 @@ from ml_project.train import train_model
 
 
 def run_pipeline(artifacts_dir: str = "artifacts") -> dict:
+    """Pipeline ML complet : entraînement, comparaison et sauvegarde."""
 
     artifacts_path = Path(artifacts_dir)
     artifacts_path.mkdir(parents=True, exist_ok=True)
@@ -29,11 +30,12 @@ def run_pipeline(artifacts_dir: str = "artifacts") -> dict:
     best_model = None
     best_score = -float("inf")
     best_name = None
+    last_model = None
 
     print("MODELS USED:", MODELS)
 
     # ======================
-    # 3. TRAIN + EVAL
+    # 3. TRAIN + EVAL LOOP
     # ======================
     for name in MODELS:
         print(f"Training: {name}")
@@ -42,21 +44,29 @@ def run_pipeline(artifacts_dir: str = "artifacts") -> dict:
         metrics = evaluate_model(model, X_test, y_test)
 
         results[name] = metrics
+        last_model = model  # 👈 dernier modèle entraîné
 
+        # sauvegarde modèle individuel
         joblib.dump(model, artifacts_path / f"{name}_model.joblib")
 
+        # sélection du meilleur modèle
         if metrics["r2"] > best_score:
             best_score = metrics["r2"]
             best_model = model
             best_name = name
 
     # ======================
-    # 4. BEST MODEL
+    # 4. SAVE BEST MODEL
     # ======================
     joblib.dump(best_model, artifacts_path / "best_model.joblib")
 
     # ======================
-    # 5. METRICS
+    # 5. SAVE LATEST MODEL
+    # ======================
+    joblib.dump(last_model, artifacts_path / "model_latest.joblib")
+
+    # ======================
+    # 6. SAVE METRICS
     # ======================
     with open(artifacts_path / "metrics.json", "w", encoding="utf-8") as file:
         json.dump(
