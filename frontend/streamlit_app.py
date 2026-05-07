@@ -1,10 +1,21 @@
+import os
 import requests
 import streamlit as st
 
-st.title("Prédiction du prix immobilier")
+# =========================
+# CONFIG BACKEND
+# =========================
+BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
+
+# =========================
+# UI
+# =========================
+st.title("🏠 Prédiction du prix immobilier")
 st.write("Saisissez les caractéristiques du quartier pour obtenir une estimation.")
 
-# Organisation en colonnes pour une meilleure interface
+# =========================
+# INPUTS
+# =========================
 col1, col2 = st.columns(2)
 
 with col1:
@@ -19,7 +30,11 @@ with col2:
     latitude = st.number_input("Latitude", value=34.0, format="%.2f")
     longitude = st.number_input("Longitude", value=-118.0, format="%.2f")
 
-if st.button("Calculer l'estimation", type="primary"):
+# =========================
+# PREDICTION
+# =========================
+if st.button("🔮 Calculer l'estimation", type="primary"):
+
     payload = {
         "MedInc": med_inc,
         "HouseAge": house_age,
@@ -32,16 +47,21 @@ if st.button("Calculer l'estimation", type="primary"):
     }
 
     try:
-        response = requests.post(
-            "http://127.0.0.1:8000/predict", json=payload, timeout=5
-        )
-        response.raise_for_status()
-        prediction = response.json()["prediction"]
+        with st.spinner("Calcul en cours..."):
 
-        st.success(f"### Prix estimé : {prediction:.2f} $100k")
-        st.metric("Estimation", f"{prediction * 100_000:,.0f} $")
+            response = requests.post(
+                f"{BACKEND_URL}/predict",
+                json=payload,
+                timeout=5
+            )
+
+            response.raise_for_status()
+            prediction = response.json().get("prediction")
+
+        st.success(f"### 💰 Prix estimé : {prediction:.2f} (x100k$)")
+        st.metric("Estimation finale", f"{prediction * 100_000:,.0f} $")
 
     except requests.exceptions.ConnectionError:
-        st.error("Erreur : Impossible de contacter le serveur backend (FastAPI).")
+        st.error("❌ Impossible de contacter le backend FastAPI.")
     except Exception as e:
-        st.error(f"Une erreur est survenue : {e}")
+        st.error(f"❌ Erreur : {str(e)}")
