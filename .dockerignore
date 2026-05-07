@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Data / notebooks / ML artifacts
+notebook/
+notebooks/
+*.ipynb
+models/
+artifacts/
+data/
+*.csv
+*.parquet
+*.pkl
+*.joblib
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Tests
+tests/
+
+# Logs
+*.log
+logs/
