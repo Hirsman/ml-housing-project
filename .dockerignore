@@ -30,17 +30,15 @@ Thumbs.db
 # Environment variables
 .env
 
-# Data / notebooks / ML artifacts
+# Data / notebooks
 notebook/
 notebooks/
 *.ipynb
-models/
+
+# ML artifacts (IMPORTANT FIX)
 artifacts/
-data/
-*.csv
-*.parquet
-*.pkl
-*.joblib
+!artifacts/models/
+!artifacts/models/best_model.joblib
 
 # Frontend
 frontend/node_modules/
