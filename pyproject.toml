@@ -8,15 +8,13 @@ dependencies = [
 [tool.ruff]
 line-length = 88
 target-version = "py311"
-ignore = ["S101"]
-
-[tool.black]
-target-version = ["py311"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "B", "S"]
-ignore = ["N803", "N806"]
+ignore = ["N803", "N806", "S101"]
 
+[tool.black]
+target-version = ["py311"]
 
 [tool.bandit]
 targets = ["src"]
