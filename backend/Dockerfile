@@ -33,7 +33,7 @@ COPY src/ ./src/
 COPY backend/ ./backend/
 
 # Copier le meilleur modèle entraîné
-COPY artifacts/models/best_model.joblib ./artifacts/models/
+COPY artifacts/best_model.joblib ./artifacts/models/
 
 # Variables d'environnement
 ENV PYTHONPATH=/app
