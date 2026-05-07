@@ -3,12 +3,12 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copier uniquement requirements
-COPY requirements.txt .
+COPY frontend/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier uniquement ce qui est nécessaire
-COPY streamlit_app.py ./streamlit_app.py
+COPY frontend/streamlit_app.py ./streamlit_app.py
 
 EXPOSE 8501
 

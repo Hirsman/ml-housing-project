@@ -38,3 +38,49 @@ jobs:
 
       - name: Check project structure
         run: python scripts/check_project_structure.py
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create fake ML artifact (CI only)
+        run: |
+          mkdir -p artifacts
+          touch artifacts/model_latest.joblib
+
+      - name: Build Backend Docker image
+        run: |
+          docker build -t housing-backend -f backend/Dockerfile .
+
+      - name: Build Frontend Docker image
+        run: |
+          docker build -t housing-frontend -f frontend/Dockerfile .
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: docker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create fake model
+        run: |
+          mkdir -p artifacts
+          touch artifacts/model_latest.joblib
+
+      - name: Start stack with docker compose
+        run: |
+          docker compose up -d --build
+
+      - name: Wait backend
+        run: sleep 10
+
+      - name: Test backend health
+        run: curl http://localhost:8000/health
+
+      - name: Stop stack
+        run: docker compose down

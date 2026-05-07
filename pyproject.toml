@@ -16,10 +16,6 @@ target-version = ["py310"]
 select = ["E", "F", "I", "N", "B", "S"]
 ignore = ["N803", "N806"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src"]
-
 [tool.bandit]
 targets = ["src"]
 exclude_dirs = [".venv", "venv"]
