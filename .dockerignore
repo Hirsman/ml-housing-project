@@ -1,52 +1,24 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
-.coverage
-htmlcov/
 
-# Virtual environments
+# env
 .venv/
-venv/
 env/
-
-# Git
-.git/
-.gitignore
-.github/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Environment variables
 .env
 
-# Data / notebooks
+# logs
+*.log
+logs/
+
+# notebooks
 notebook/
 notebooks/
 *.ipynb
 
-# ML artifacts (IMPORTANT FIX)
-artifacts/
-!artifacts/models/
-!artifacts/models/best_model.joblib
-
-# Frontend
+# frontend
 frontend/node_modules/
 frontend/dist/
 
-# Tests
+# tests
 tests/
-
-# Logs
-*.log
-logs/
