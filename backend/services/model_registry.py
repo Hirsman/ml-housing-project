@@ -9,6 +9,7 @@ MODEL_VERSIONS = {
     "B": "model_v2",
 }
 
+
 @lru_cache(maxsize=1)
 def get_models() -> dict:
     """Load and cache the A/B pipelines from local artifacts."""

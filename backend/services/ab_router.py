@@ -10,7 +10,7 @@ def choose_variant(user_id: str, traffic_b_percent: int = 50) -> str:
     if not user_id:
         user_id = "anonymous"
 
-    hashed_value = int(hashlib.md5(user_id.encode("utf-8")).hexdigest(), 16)
+    hashed_value = int(hashlib.sha256(user_id.encode("utf-8")).hexdigest(), 16)
     bucket = hashed_value % 100
 
     if bucket < traffic_b_percent:

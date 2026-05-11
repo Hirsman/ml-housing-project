@@ -3,12 +3,12 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+from backend.services.ab_router import choose_variant
+
 # Allow running this script directly from the repository's scripts/ folder.
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-
-from backend.services.ab_router import choose_variant
 
 
 def compute_bucket(user_id: str) -> int:
@@ -17,10 +17,12 @@ def compute_bucket(user_id: str) -> int:
     hashed_value = int(hashlib.md5(user_id.encode("utf-8")).hexdigest(), 16)
     return hashed_value % 100
 
+
 def normalize_user_id(user_id) -> str:
     if not user_id:
         return "anonymous"
     return str(user_id)
+
 
 def display_user_label(user_id) -> str:
     if user_id is None:
@@ -28,6 +30,7 @@ def display_user_label(user_id) -> str:
     if user_id == "":
         return "EMPTY_STRING"
     return str(user_id)
+
 
 def inspect_users(users, traffic_b_percent=50):
     print(f"\n=== Inspection with traffic_b_percent={traffic_b_percent}% ===")
@@ -48,18 +51,27 @@ def inspect_users(users, traffic_b_percent=50):
     print(f"A: {counts.get('A', 0)}")
     print(f"B: {counts.get('B', 0)}")
 
+
 def test_stability(user_id, runs=5, traffic_b_percent=50):
     input_label = display_user_label(user_id)
     routed_user = normalize_user_id(user_id)
-    print(f"\n=== Stability test for user '{input_label}' (routed as '{routed_user}') ===")
-    variants = [choose_variant(user_id, traffic_b_percent=traffic_b_percent) for _ in range(runs)]
+    print(
+        f"\n=== Stability test for user '{input_label}' (routed as '{routed_user}') ==="
+    )
+    variants = [
+        choose_variant(user_id, traffic_b_percent=traffic_b_percent)
+        for _ in range(runs)
+    ]
     print("Results:", variants)
     print("Stable:", len(set(variants)) == 1)
+
 
 def test_multiple_traffic_levels(user_id, levels=(10, 25, 50, 75, 90)):
     input_label = display_user_label(user_id)
     routed_user = normalize_user_id(user_id)
-    print(f"\n=== Traffic sensitivity for user '{input_label}' (routed as '{routed_user}') ===")
+    print(
+        f"\n=== Traffic sensitivity for user '{input_label}' (routed as '{routed_user}') ==="
+    )
     print(f"{'traffic_b_percent':<20} {'bucket':<8} {'variant':<8}")
     print("-" * 40)
 
@@ -67,6 +79,7 @@ def test_multiple_traffic_levels(user_id, levels=(10, 25, 50, 75, 90)):
     for level in levels:
         variant = choose_variant(user_id, traffic_b_percent=level)
         print(f"{level:<20} {bucket:<8} {variant:<8}")
+
 
 if __name__ == "__main__":
     sample_users = [

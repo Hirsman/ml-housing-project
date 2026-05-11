@@ -1,4 +1,5 @@
 import os
+
 import requests
 import streamlit as st
 
@@ -39,7 +40,6 @@ with col2:
 # PREDICTION
 # =========================
 if st.button("🔮 Calculer l'estimation", type="primary"):
-
     payload = {
         "user_id": user_id,  # 🔥 AJOUT A/B TESTING
         "MedInc": med_inc,
@@ -54,11 +54,7 @@ if st.button("🔮 Calculer l'estimation", type="primary"):
 
     try:
         with st.spinner("Calcul en cours..."):
-            response = requests.post(
-                f"{BACKEND_URL}/predict",
-                json=payload,
-                timeout=5
-            )
+            response = requests.post(f"{BACKEND_URL}/predict", json=payload, timeout=5)
 
             response.raise_for_status()
             result = response.json()

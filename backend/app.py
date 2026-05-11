@@ -35,15 +35,14 @@ def predict(data: dict):
     prediction = float(model.predict(df)[0])
 
     # Logging expérimentation
-    log_prediction({
-        "user_id": user_id,
-        "variant": variant,
-        "prediction": prediction,
-        "features": data
-    })
+    log_prediction(
+        {
+            "user_id": user_id,
+            "variant": variant,
+            "prediction": prediction,
+            "features": data,
+        }
+    )
 
     # Réponse API
-    return {
-        "prediction": prediction,
-        "variant": variant
-    }
+    return {"prediction": prediction, "variant": variant}
