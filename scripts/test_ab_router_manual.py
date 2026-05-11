@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
 def compute_bucket(user_id: str) -> int:
     if not user_id:
         user_id = "anonymous"
-    hashed_value = int(hashlib.md5(user_id.encode("utf-8")).hexdigest(), 16)
+    hashed_value = int(hashlib.sha256(user_id.encode("utf-8")).hexdigest(), 16)
     return hashed_value % 100
 
 
@@ -70,7 +70,8 @@ def test_multiple_traffic_levels(user_id, levels=(10, 25, 50, 75, 90)):
     input_label = display_user_label(user_id)
     routed_user = normalize_user_id(user_id)
     print(
-        f"\n=== Traffic sensitivity for user '{input_label}' (routed as '{routed_user}') ==="
+        f"\n=== Traffic sensitivity for user '{input_label}'" 
+        f"(routed as '{routed_user}') ==="
     )
     print(f"{'traffic_b_percent':<20} {'bucket':<8} {'variant':<8}")
     print("-" * 40)
