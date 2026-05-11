@@ -6,8 +6,12 @@ from pydantic import BaseModel, Field
     historiques attendus par le modele sklearn.
     """
 
+
 class HousingFeatures(BaseModel):
-    user_id: str = Field("anonymous", description="Identifiant utilisateur fictif pour le routage A/B",)
+    user_id: str = Field(
+        "anonymous",
+        description="Identifiant user fictif pour le routage A/B",
+    )
     median_income: float
     housing_median_age: float
     average_rooms: float

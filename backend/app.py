@@ -1,20 +1,14 @@
-from pathlib import Path
-
-import joblib
 import pandas as pd
 from fastapi import FastAPI
 
+from backend.services.ab_router import choose_variant
+from backend.services.experiment_logger import log_prediction
+from backend.services.model_registry import get_models
+
 app = FastAPI()
 
-
-def get_latest_model():
-    model_path = Path("artifacts/model_latest.joblib")
-    if not model_path.exists():
-        raise FileNotFoundError("Model not found")
-    return joblib.load(model_path)
-
-
-model = get_latest_model()
+# Charger les modèles A/B
+models = get_models()
 
 
 @app.get("/health")
@@ -24,6 +18,32 @@ def health():
 
 @app.post("/predict")
 def predict(data: dict):
+
+    # Extraire user_id
+    user_id = data.pop("user_id", "anonymous")
+
+    # Construire dataframe
     df = pd.DataFrame([data])
-    prediction = model.predict(df)[0]
-    return {"prediction": float(prediction)}
+
+    # Choisir variante
+    variant = choose_variant(user_id)
+
+    # Sélectionner modèle
+    model = models[variant]
+
+    # Prédiction
+    prediction = float(model.predict(df)[0])
+
+    # Logging expérimentation
+    log_prediction({
+        "user_id": user_id,
+        "variant": variant,
+        "prediction": prediction,
+        "features": data
+    })
+
+    # Réponse API
+    return {
+        "prediction": prediction,
+        "variant": variant
+    }
