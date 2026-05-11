@@ -1,20 +1,30 @@
-# Environnements virtuels
-venv/
+# Environnements Python
 .venv/
-env/
+venv/
+__pycache__/
+*.pyc
+.env
+*.env
+
+# Données et modèles locaux
+data/
+models/
+*.pkl
+*.joblib
+artifacts/*.joblib
+artifacts/**/*.joblib
+artifacts/*.pkl
+artifacts/**/*.pkl
 
 # Secrets
 .env
+*.key
 
-# Cache Python
-__pycache__/
-*.pyc
-
-# Logs
-*.log
-
-# Tests cache
-.pytest_cache/
-
-# OS files
+# Système / IDE
+.vscode/
 .DS_Store
+Thumbs.db
+
+# Cache tests
+.pytest_cache/
+.ruff_cache/
