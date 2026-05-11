@@ -15,6 +15,11 @@ st.title("🏠 Prédiction du prix immobilier")
 st.write("Saisissez les caractéristiques du quartier pour obtenir une estimation.")
 
 # =========================
+# USER ID (AJOUT IMPORTANT A/B TESTING)
+# =========================
+user_id = st.text_input("User ID", value="anonymous")
+
+# =========================
 # INPUTS
 # =========================
 col1, col2 = st.columns(2)
@@ -36,6 +41,7 @@ with col2:
 # =========================
 if st.button("🔮 Calculer l'estimation", type="primary"):
     payload = {
+        "user_id": user_id,  # 🔥 AJOUT A/B TESTING
         "MedInc": med_inc,
         "HouseAge": house_age,
         "AveRooms": ave_rooms,
@@ -51,10 +57,16 @@ if st.button("🔮 Calculer l'estimation", type="primary"):
             response = requests.post(f"{BACKEND_URL}/predict", json=payload, timeout=5)
 
             response.raise_for_status()
-            prediction = response.json().get("prediction")
+            result = response.json()
+
+        prediction = result.get("prediction")
+        variant = result.get("variant")  # 🔥 AJOUT
 
         st.success(f"### 💰 Prix estimé : {prediction:.2f} (x100k$)")
         st.metric("Estimation finale", f"{prediction * 100_000:,.0f} $")
+
+        # 🔥 affichage A/B test
+        st.info(f"🧪 Modèle utilisé : {variant}")
 
     except requests.exceptions.ConnectionError:
         st.error("❌ Impossible de contacter le backend FastAPI.")
