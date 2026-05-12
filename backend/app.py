@@ -19,10 +19,8 @@ def health():
 @app.post("/predict")
 def predict(data: dict):
 
-    # Extraire user_id
     user_id = data.pop("user_id", "anonymous")
 
-       # 🔥 NORMALISATION DES FEATURES
     rename_map = {
         "average_rooms": "AveRooms",
         "average_bedrooms": "AveBedrms",
@@ -34,29 +32,38 @@ def predict(data: dict):
         "longitude": "Longitude",
     }
 
+    # 🔥 normalisation
     data = {rename_map.get(k, k): v for k, v in data.items()}
 
-    # Construire dataframe
+    # 🔥 sécurité: forcer toutes les colonnes attendues
+    expected_features = [
+        "MedInc",
+        "HouseAge",
+        "AveRooms",
+        "AveBedrms",
+        "Population",
+        "AveOccup",
+        "Latitude",
+        "Longitude",
+    ]
+
+    data = {k: data.get(k, 0) for k in expected_features}
+
     df = pd.DataFrame([data])
 
-    # Choisir variante
     variant = choose_variant(user_id)
-
-    # Sélectionner modèle
     model = models[variant]
 
-    # Prédiction
     prediction = float(model.predict(df)[0])
 
-    # Logging expérimentation
-    log_prediction(
-        {
-            "user_id": user_id,
-            "variant": variant,
-            "prediction": prediction,
-            "features": data,
-        }
-    )
+    log_prediction({
+        "user_id": user_id,
+        "variant": variant,
+        "prediction": prediction,
+        "features": data,
+    })
 
-    # Réponse API
-    return {"prediction": prediction, "variant": variant}
+    return {
+        "prediction": prediction,
+        "variant": variant
+    }
