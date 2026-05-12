@@ -150,7 +150,6 @@ payload = build_payload(
 # SINGLE PREDICTION
 # =========================
 if st.button("🔮 Lancer une prédiction", type="primary"):
-
     logger.info(
         "Nouvelle requete de prediction - user_id=%s",
         user_id,
@@ -158,7 +157,6 @@ if st.button("🔮 Lancer une prédiction", type="primary"):
 
     try:
         with st.spinner("Calcul en cours..."):
-
             response = requests.post(
                 PREDICT_URL,
                 json=payload,
@@ -236,7 +234,6 @@ st.write(
 )
 
 if st.button("🚀 Simuler 100 utilisateurs"):
-
     success = 0
 
     variant_counts = {
@@ -249,7 +246,6 @@ if st.button("🚀 Simuler 100 utilisateurs"):
     progress_bar = st.progress(0)
 
     for i in range(100):
-
         simulated_payload = build_payload(
             user_id=f"user_{i}",
             MedInc=round(

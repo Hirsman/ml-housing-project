@@ -1,60 +1,86 @@
-import random
-import requests
+import time
+import pandas as pd
+from fastapi import FastAPI
 
-API_URL = "http://127.0.0.1:8000/predict"
+from backend.services.ab_router import choose_variant
+from backend.services.experiment_logger import log_prediction
+from backend.services.model_registry import get_models
+
+app = FastAPI()
+
+# Charger les modèles A/B
+models = get_models()
 
 
-def build_payload(user_id: str, rng: random.Random) -> dict:
-    return {
-        "user_id": user_id,
-        "median_income": round(rng.uniform(1.0, 8.0), 2),
-        "housing_median_age": float(rng.randint(1, 50)),
-        "average_rooms": round(rng.uniform(2.0, 8.0), 2),
-        "average_bedrooms": round(rng.uniform(0.5, 2.5), 2),
-        "population": float(rng.randint(200, 5000)),
-        "average_occupancy": round(rng.uniform(1.0, 6.0), 2),
-        "latitude": round(rng.uniform(32.0, 42.0), 3),
-        "longitude": round(rng.uniform(-124.0, -114.0), 3),
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/predict")
+def predict(data: dict):
+
+    # 🔥 mesure du temps de réponse
+    start_time = time.time()
+
+    # 🔥 extraction user_id
+    user_id = data.pop("user_id", "anonymous")
+
+    # 🔥 mapping des features frontend → modèle
+    rename_map = {
+        "average_rooms": "AveRooms",
+        "average_bedrooms": "AveBedrms",
+        "average_occupancy": "AveOccup",
+        "housing_median_age": "HouseAge",
+        "median_income": "MedInc",
+        "population": "Population",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
     }
 
+    # normalisation des noms de colonnes
+    data = {rename_map.get(k, k): v for k, v in data.items()}
 
-def main(n: int = 100):
-    rng = random.Random()
+    # features attendues par le modèle
+    expected_features = [
+        "MedInc",
+        "HouseAge",
+        "AveRooms",
+        "AveBedrms",
+        "Population",
+        "AveOccup",
+        "Latitude",
+        "Longitude",
+    ]
 
-    success = 0
-    fail = 0
+    # sécurisation (valeurs manquantes → 0)
+    data = {k: data.get(k, 0) for k in expected_features}
 
-    variant_counts = {"A": 0, "B": 0}
+    # dataframe pour sklearn
+    df = pd.DataFrame([data])
 
-    for i in range(n):
-        payload = build_payload(f"user_{i}", rng)
+    # 🔥 A/B testing routing
+    variant = choose_variant(user_id)
+    model = models[variant]
 
-        try:
-            response = requests.post(API_URL, json=payload, timeout=10)
+    # prédiction
+    prediction = float(model.predict(df)[0])
 
-            if response.status_code != 200:
-                fail += 1
-                print(f"[{i}] FAIL -> HTTP {response.status_code}")
-                continue
+    # latence
+    latency_ms = (time.time() - start_time) * 1000
 
-            result = response.json()
-            success += 1
+    # logging expérimentation
+    log_prediction({
+        "user_id": user_id,
+        "variant": variant,
+        "prediction": prediction,
+        "latency_ms": latency_ms,
+        "features": data,
+    })
 
-            variant = result.get("variant")
-            if variant:
-                variant_counts[variant] = variant_counts.get(variant, 0) + 1
-
-            print(f"[{i}] SUCCESS -> {variant} | {result.get('prediction')}")
-
-        except Exception as e:
-            fail += 1
-            print(f"[{i}] FAIL -> {e}")
-
-    print("\n===== SUMMARY =====")
-    print(f"Success: {success}")
-    print(f"Fail: {fail}")
-    print(f"Variant distribution: {variant_counts}")
-
-
-if __name__ == "__main__":
-    main(100)
+    # réponse API
+    return {
+        "prediction": prediction,
+        "variant": variant,
+        "latency_ms": latency_ms,
+    }
