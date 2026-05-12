@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from fastapi import FastAPI
 
@@ -7,7 +9,6 @@ from backend.services.model_registry import get_models
 
 app = FastAPI()
 
-# Charger les modèles A/B
 models = get_models()
 
 
@@ -18,6 +19,8 @@ def health():
 
 @app.post("/predict")
 def predict(data: dict):
+
+    start_time = time.time()
 
     user_id = data.pop("user_id", "anonymous")
 
@@ -32,10 +35,8 @@ def predict(data: dict):
         "longitude": "Longitude",
     }
 
-    # 🔥 normalisation
     data = {rename_map.get(k, k): v for k, v in data.items()}
 
-    # 🔥 sécurité: forcer toutes les colonnes attendues
     expected_features = [
         "MedInc",
         "HouseAge",
@@ -56,14 +57,18 @@ def predict(data: dict):
 
     prediction = float(model.predict(df)[0])
 
+    latency_ms = (time.time() - start_time) * 1000
+
     log_prediction({
         "user_id": user_id,
         "variant": variant,
         "prediction": prediction,
+        "latency_ms": latency_ms,
         "features": data,
     })
 
     return {
         "prediction": prediction,
-        "variant": variant
+        "variant": variant,
+        "latency_ms": latency_ms
     }
