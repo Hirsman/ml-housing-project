@@ -70,7 +70,7 @@ def test_multiple_traffic_levels(user_id, levels=(10, 25, 50, 75, 90)):
     input_label = display_user_label(user_id)
     routed_user = normalize_user_id(user_id)
     print(
-        f"\n=== Traffic sensitivity for user '{input_label}'" 
+        f"\n=== Traffic sensitivity for user '{input_label}'"
         f"(routed as '{routed_user}') ==="
     )
     print(f"{'traffic_b_percent':<20} {'bucket':<8} {'variant':<8}")
