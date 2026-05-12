@@ -8,7 +8,6 @@ API_URL = "http://127.0.0.1:8000/predict"
 def build_payload(i: int, rng: random.Random):
     return {
         "user_id": f"user_{i}",
-
         # 🔥 IMPORTANT : noms EXACTS du modèle
         "MedInc": rng.uniform(1, 8),  # noqa: S311
         "HouseAge": rng.randint(1, 50),  # noqa: S311
