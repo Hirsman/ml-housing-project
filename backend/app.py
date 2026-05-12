@@ -59,16 +59,14 @@ def predict(data: dict):
 
     latency_ms = (time.time() - start_time) * 1000
 
-    log_prediction({
-        "user_id": user_id,
-        "variant": variant,
-        "prediction": prediction,
-        "latency_ms": latency_ms,
-        "features": data,
-    })
+    log_prediction(
+        {
+            "user_id": user_id,
+            "variant": variant,
+            "prediction": prediction,
+            "latency_ms": latency_ms,
+            "features": data,
+        }
+    )
 
-    return {
-        "prediction": prediction,
-        "variant": variant,
-        "latency_ms": latency_ms
-    }
+    return {"prediction": prediction, "variant": variant, "latency_ms": latency_ms}
