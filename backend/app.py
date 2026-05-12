@@ -1,4 +1,5 @@
 import time
+from contextlib import asynccontextmanager
 
 import pandas as pd
 from fastapi import FastAPI
@@ -6,6 +7,7 @@ from fastapi import FastAPI
 from backend.services.ab_router import choose_variant
 from backend.services.experiment_logger import log_prediction
 from backend.services.model_registry import get_models
+from backend.storage.hf_client import HFClient
 
 app = FastAPI()
 
@@ -91,3 +93,26 @@ def predict(data: dict):
         "variant": variant,
         "latency_ms": latency_ms,
     }
+
+
+@asynccontextmanager
+async def lifespan(app):
+
+    # 🔥 CONFIG SIMPLE (LOCAL uniquement dans ton cas)
+    USE_HF = False  # tu restes en local
+
+    if USE_HF:
+        client = HFClient(repo_id="ton-repo-hf")
+    else:
+        client = HFClient(local_path="backend/models")
+
+    # chargement des modèles A/B
+    app.state.models = {
+        "A": client.load_model("model_a.pkl"),
+        "B": client.load_model("model_b.pkl"),
+    }
+
+    yield
+
+    # cleanup si besoin
+    app.state.models.clear()
