@@ -22,6 +22,20 @@ def predict(data: dict):
     # Extraire user_id
     user_id = data.pop("user_id", "anonymous")
 
+       # 🔥 NORMALISATION DES FEATURES
+    rename_map = {
+        "average_rooms": "AveRooms",
+        "average_bedrooms": "AveBedrms",
+        "average_occupancy": "AveOccup",
+        "housing_median_age": "HouseAge",
+        "median_income": "MedInc",
+        "population": "Population",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+    }
+
+    data = {rename_map.get(k, k): v for k, v in data.items()}
+
     # Construire dataframe
     df = pd.DataFrame([data])
 
